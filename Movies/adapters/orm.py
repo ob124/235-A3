@@ -73,9 +73,13 @@ article_tags = Table(
     Column('article_id', ForeignKey('articles.id')),
     Column('tag_id', ForeignKey('tags.id'))
 )
-
-
 # dont really understand this.
+# maps the domain variables to database?
+"""Object relational mapper: the SQLAlchemymapper function maps domain model objectsto the created tables, 
+and deals with associations (relationships). All strings in the mapper (_comments, _user) are actually variables in 
+the domain model classes!"""
+
+
 def map_model_to_tables():
     mapper(model.User, users, properties={
         '_username': users.c.username,

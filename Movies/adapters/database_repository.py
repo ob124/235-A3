@@ -62,7 +62,50 @@ class SqlAlchemyRepository(AbstractRepository):
     def reset_session(self):
         self._session_cm.reset_session()
 
-    def add_user(self, user: user.User):
+    def load_movies(self):
+        pass
+
+    def get_movie(self, movieid):
+        pass
+
+    def get_num_movies(self):
+        pass
+
+    def load_users(self):
+        pass
+
+    def get_user(self, username):
+        user = None
+        try:
+            user = self._session_cm.session.query(user.User).filter_by(_username=username).one()
+        except NoResultFound:
+            # Ignore any exception and return None.
+            pass
+
+        return user
+
+    def get_users(self):
+        pass
+
+    def get_user_names(self):
+        pass
+
+    def add_user(self, username, password):
+        pass
+
+    def load_reviews(self):
+        pass
+
+    def get_reviews(self):
+        pass
+
+    def add_review(self, username, movie_id, review, rating):
+        pass
+
+    def populate(self, movie_file, review_file, users_file):
+        pass
+
+'''    def add_user(self, user: user.User):
         with self._session_cm as scm:
             scm.session.add(user)
             scm.commit()
@@ -173,10 +216,10 @@ class SqlAlchemyRepository(AbstractRepository):
         super().add_comment(comment)
         with self._session_cm as scm:
             scm.session.add(comment)
-            scm.commit()
-
-
+            scm.commit()'''
 # anything below is just to set up the populate method.
+
+
 def article_record_generator(filename: str):
     with open(filename, mode='r', encoding='utf-8-sig') as infile:
         reader = csv.reader(infile)

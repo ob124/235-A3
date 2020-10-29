@@ -103,7 +103,7 @@ class SqlAlchemyRepository(AbstractRepository):
         pass
 
     def populate(self, movie_file, review_file, users_file):
-        populate()
+        pass
 
 '''    def add_user(self, user: user.User):
         with self._session_cm as scm:

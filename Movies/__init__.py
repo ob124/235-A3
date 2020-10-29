@@ -37,7 +37,7 @@ def create_app(test_config=None):
 
     elif app.config['REPOSITORY'] == 'database':
         # Configure database.
-        database_uri = app.config['SQLAuLCHEMY_DATABASE_URI']
+        database_uri = app.config['SQLALCHEMY_DATABASE_URI']
 
         # We create a comparatively simple SQLite database, which is based on a single file (see .env for URI).
         # For example the file database could be located locally and relative to the application in covid-19.db,

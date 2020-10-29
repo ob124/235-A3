@@ -12,7 +12,6 @@ from werkzeug.security import generate_password_hash
 from sqlalchemy.orm import scoped_session
 from flask import _app_ctx_stack
 
-from Movies.domainmodel import user, Article, Comment, Tag
 from Movies.adapters.repository import AbstractRepository
 
 tags = None
@@ -52,6 +51,7 @@ class SessionContextManager:
 
 
 # new abstract class for Sql (uses queries to get and store instead of the csv)
+# TODO
 class SqlAlchemyRepository(AbstractRepository):
     def __init__(self, session_factory):
         self._session_cm = SessionContextManager(session_factory)
@@ -103,7 +103,7 @@ class SqlAlchemyRepository(AbstractRepository):
         pass
 
     def populate(self, movie_file, review_file, users_file):
-        pass
+        populate()
 
 '''    def add_user(self, user: user.User):
         with self._session_cm as scm:
@@ -220,6 +220,56 @@ class SqlAlchemyRepository(AbstractRepository):
 # anything below is just to set up the populate method.
 
 
+# DONE
+def generic_generator(filename, post_process=None):
+    with open(filename) as infile:
+        reader = csv.reader(infile)
+
+        # Read first line of the CSV file.
+        next(reader)
+
+        # Read remaining rows from the CSV file.
+        for row in reader:
+            # Strip any leading/trailing white space from data read.
+            row = [item.strip() for item in row]
+
+            if post_process is not None:
+                row = post_process(row)
+            yield row
+
+
+# grabs from csv file and stores it in database
+def populate(engine: Engine, data_path: str):
+    conn = engine.raw_connection()
+    cursor = conn.cursor()
+
+    # keep
+    insert_reviews = """
+        INSERT INTO review (
+        ID, username, movie_id, review, rating)
+        VALUES (?, ?, ?, ?, ?)"""
+    cursor.executemany(insert_reviews, generic_generator(os.path.join(data_path, 'reviews.csv')))
+
+    # keep
+    insert_users = """
+            INSERT INTO users (
+            ID, username, password)
+            VALUES (?, ?, ?)"""
+    cursor.executemany(insert_users, generic_generator(os.path.join(data_path, 'users.csv')))
+
+    # keep
+    insert_movies = """
+        INSERT INTO movies (
+        Rank, Title, Genre, Description, Director, Actors, Year, Runtime, Rating, Votes, Revenue, Metascore)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+    cursor.executemany(insert_movies, generic_generator(os.path.join(data_path, 'Data1000Movies.csv')))
+    # sqlite3.OperationalError: near "(": syntax error
+
+    conn.commit()
+    conn.close()
+
+
+'''
 def article_record_generator(filename: str):
     with open(filename, mode='r', encoding='utf-8-sig') as infile:
         reader = csv.reader(infile)
@@ -270,42 +320,13 @@ def article_tags_generator():
             article_tags_key = article_tags_key + 1
             yield article_tags_key, article_key, tag_key
 
-
-def generic_generator(filename, post_process=None):
-    with open(filename) as infile:
-        reader = csv.reader(infile)
-
-        # Read first line of the CSV file.
-        next(reader)
-
-        # Read remaining rows from the CSV file.
-        for row in reader:
-            # Strip any leading/trailing white space from data read.
-            row = [item.strip() for item in row]
-
-            if post_process is not None:
-                row = post_process(row)
-            yield row
-
-
 def process_user(user_row):
     user_row[2] = generate_password_hash(user_row[2])
     return user_row
 
-
-# grabs from csv file and stores it in database
-def populate(engine: Engine, data_path: str):
-    conn = engine.raw_connection()
-    cursor = conn.cursor()
-
+def blah blah blah():
     global tags
     tags = dict()
-
-    insert_articles = """
-        INSERT INTO articles (
-        id, date, title, first_para, hyperlink, image_hyperlink)
-        VALUES (?, ?, ?, ?, ?, ?)"""
-    cursor.executemany(insert_articles, article_record_generator(os.path.join(data_path, 'news_articles.csv')))
 
     insert_tags = """
         INSERT INTO tags (
@@ -330,7 +351,5 @@ def populate(engine: Engine, data_path: str):
         id, user_id, article_id, comment, timestamp)
         VALUES (?, ?, ?, ?, ?)"""
     cursor.executemany(insert_comments, generic_generator(os.path.join(data_path, 'comments.csv')))
-
-    conn.commit()
-    conn.close()
+'''
 

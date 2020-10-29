@@ -11,11 +11,35 @@ metadata = MetaData()
 
 # just need users, movies, and reviews
 # remember that users, movies, and reviews link so relation will need to be established
+# keep
 users = Table(
     'users', metadata,
-    Column('id', Integer, primary_key=True, autoincrement=True),
+    Column('ID', Integer, primary_key=True, autoincrement=True),
     Column('username', String(255), unique=True, nullable=False),
     Column('password', String(255), nullable=False)
+)
+# keep
+reviews = Table(
+    Column('ID', Integer, primary_key=True, autoincrement=True),
+    Column('username', ForeignKey('users.username'), unique=True, nullable=False),
+    Column('movie_id', ForeignKey('movies.Rank'), unique=True, nullable=False),
+    Column('review', String(1024), nullable=False),
+    Column('rating', String(255), nullable=False)
+)
+# keep
+movies = Table(
+    Column('Rank', Integer, primary_key=True, autoincrement=True),
+    Column('Title', String(255), unique=True, nullable=False),
+    Column('Genre', String(255), nullable=False),
+    Column('Description', String(1024), nullable=False),
+    Column('Director', String(255), nullable=False),
+    Column('Actors', String(1024), nullable=False),
+    Column('Year', String(255), nullable=False),
+    Column('Runtime (Minutes)', String(255), nullable=False),
+    Column('Rating', String(255), nullable=False),
+    Column('Votes', String(255), nullable=False),
+    Column('Revenue (Millions)', String(255), nullable=False),
+    Column('Metascore', String(255), nullable=False)
 )
 
 comments = Table(
